@@ -1,6 +1,8 @@
-import logo from "../assets/images/logo.svg";
-import arrow from "../assets/images/icon-arrow-down.svg";
-import { useState } from "react";
+import logo from "../assets/images/logo.svg?url";
+import arrow from "../assets/images/icon-arrow-down.svg?url";
+import { useState, useContext } from "react";
+import { FontContext } from "../context/FontContext";
+import { ThemeContext, ThemeProvider } from "../context/ThemeContext";
 
 export default function Header() {
   return (
@@ -21,8 +23,15 @@ function RightContainer() {
     </div>
   );
 }
-function FontSelector({ font, setFont }) {
+function FontSelector() {
   const [fontSelectorIsOpen, setFontSelectorIsOpen] = useState(false);
+  const { setFont } = useContext(FontContext);
+
+  const fontOptions = [
+    { value: "sans", label: "Sans Serif" },
+    { value: "serif", label: "Serif" },
+    { value: "mono", label: "Mono" },
+  ];
 
   return (
     <div className="header__fontSelector" data-open="false">
@@ -44,15 +53,15 @@ function FontSelector({ font, setFont }) {
 
       {fontSelectorIsOpen && (
         <ul className="header__fontMenu" id="fontMenu" role="listbox">
-          <li className="header__fontOption" role="option" data-font="sans">
-            Sans Serif
-          </li>
-          <li className="header__fontOption" role="option" data-font="serif">
-            Serif
-          </li>
-          <li className="header__fontOption" role="option" data-font="mono">
-            Mono
-          </li>
+          {fontOptions.map((option) => (
+            <li
+              className="header__fontOption"
+              onClick={() => setFont(option.value)}
+              key={option.value}
+            >
+              {option.label}
+            </li>
+          ))}
         </ul>
       )}
     </div>
@@ -60,11 +69,19 @@ function FontSelector({ font, setFont }) {
 }
 
 function ThemeSelector() {
+  const { theme, setTheme } = useContext(ThemeContext);
+
   return (
     <div className="header__themeSelector">
       <div className="header__toggleContainer">
         <label htmlFor="toggle" className="header__toggle">
-          <input type="checkbox" id="toggle" className="header__input" />
+          <input
+            type="checkbox"
+            id="toggle"
+            className="header__input"
+            checked={theme === "dark"}
+            onChange={() => setTheme(theme === "dark" ? "light" : "dark")}
+          />
           <span className="header__toggleSlider"></span>
         </label>
       </div>
