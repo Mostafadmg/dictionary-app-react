@@ -2,6 +2,7 @@ import { useSearch } from "../context/SearchContext";
 import EmptyState from "./EmptyState";
 import LoadingState from "./LoadingState";
 import ErrorState from "./ErrorState";
+import playIcon from "../assets/images/icon-play.svg";
 
 export default function Result() {
   const { status, currentWord } = useSearch();
@@ -22,6 +23,12 @@ export default function Result() {
 
 function Pronounciation() {
   const { currentWord } = useSearch();
+  const audioUrl = currentWord.phonetics.find((p) => p.audio)?.audio;
+
+  function handleAudio() {
+    if (!audioUrl) return;
+    new Audio(audioUrl).play();
+  }
 
   return (
     <div className="pronounciationContainer">
@@ -33,6 +40,11 @@ function Pronounciation() {
             "pronunciation not available"}
         </p>
       </div>
+      {audioUrl && (
+        <button className="playBtn" onClick={handleAudio}>
+          <img src={playIcon} alt="Play pronunciation" />
+        </button>
+      )}
     </div>
   );
 }
@@ -49,6 +61,7 @@ function MeaningResult() {
       <h3 className="meaningHeading">Meaning</h3>
       <MeaningList meaning={meaning} />
       <SynonymContainer meaning={meaning} />
+      <SourceContainer />
     </div>
   ));
 }
@@ -110,6 +123,42 @@ function SynonymContainer({ meaning }) {
           </a>
         ))}
       </div>
+    </div>
+  );
+}
+function SourceContainer() {
+  const { currentWord } = useSearch();
+
+  if (!currentWord.sourceUrls?.length) return null;
+
+  const url = currentWord.sourceUrls[0]; // ← just grab first item
+
+  return (
+    <div className="sourceContainer">
+      <span className="sourceLabel">Source</span>
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="sourceLink"
+      >
+        {url}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <line x1="10" y1="14" x2="21" y2="3"></line>
+        </svg>
+      </a>
     </div>
   );
 }

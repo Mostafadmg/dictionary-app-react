@@ -35,6 +35,7 @@ export function SearchProvider({ children }) {
       }
       const data = await response.json();
       setCurrentWord(data[0]);
+      console.log(currentWord);
       setStatus("success");
     } catch (err) {
       setStatus("error");
