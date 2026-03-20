@@ -1,11 +1,14 @@
 import { useSearch } from "../context/SearchContext";
+import EmptyState from "./EmptyState";
+import LoadingState from "./LoadingState";
+import ErrorState from "./ErrorState";
 
 export default function Result() {
   const { status, currentWord } = useSearch();
 
-  if (status === "idle") return null;
-  if (status === "loading") return <p>Loading...</p>;
-  if (status === "error") return <p>Error!</p>;
+  if (status === "idle") return <EmptyState />;
+  if (status === "loading") return <LoadingState />;
+  if (status === "error") return <ErrorState />;
 
   return (
     <div id="result">
@@ -45,6 +48,7 @@ function MeaningResult() {
       </div>
       <h3 className="meaningHeading">Meaning</h3>
       <MeaningList meaning={meaning} />
+      <SynonymContainer meaning={meaning} />
     </div>
   ));
 }
@@ -58,11 +62,18 @@ function MeaningList({ meaning }) {
     </ul>
   );
 }
+
 function MeaningItem({ definition }) {
   return (
     <li className="meaning-li">
       <span className="dot">
-        <svg xmlns="http://www.w3.org/2000/svg" width="5" height="5" viewBox="0 0 5 5" fill="none">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="5"
+          height="5"
+          viewBox="0 0 5 5"
+          fill="none"
+        >
           <circle cx="2.5" cy="2.5" r="2.5" fill="#8F19E8" />
         </svg>
       </span>
@@ -76,29 +87,28 @@ function MeaningItem({ definition }) {
   );
 }
 
-function SynonymContainer() {
+function SynonymContainer({ meaning }) {
+  const { fetchWord } = useSearch();
+
+  if (!meaning.synonyms || meaning.synonyms.length === 0) return null;
+
   return (
     <div className="synonyms-container">
       <span className="synonyms-label">Synonyms</span>
       <div className="synonyms-list">
-        <a href="#" className="synonym-link">
-          Bible
-        </a>{" "}
-        <a href="#" className="synonym-link">
-          word of God
-        </a>{" "}
-        <a href="#" className="synonym-link">
-          God
-        </a>{" "}
-        <a href="#" className="synonym-link">
-          Logos
-        </a>{" "}
-        <a href="#" className="synonym-link">
-          promise
-        </a>{" "}
-        <a href="#" className="synonym-link">
-          vocable
-        </a>
+        {meaning.synonyms.map((synonym) => (
+          <a
+            key={synonym}
+            href="#"
+            className="synonym-link"
+            onClick={(e) => {
+              e.preventDefault();
+              fetchWord(synonym);
+            }}
+          >
+            {synonym}
+          </a>
+        ))}
       </div>
     </div>
   );

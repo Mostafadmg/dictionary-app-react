@@ -3,9 +3,7 @@ import { useContext, useState } from "react";
 import { SearchContext } from "../context/SearchContext";
 
 export default function Form() {
-  const { fetchWord } = useContext(SearchContext);
-  const [query, setQuery] = useState("");
-
+  const { fetchWord, query, setQuery } = useContext(SearchContext);
   return (
     <form
       className="search-form"

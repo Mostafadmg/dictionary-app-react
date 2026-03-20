@@ -8,8 +8,10 @@ export function SearchProvider({ children }) {
   const [status, setStatus] = useState("idle");
   const [currentWord, setCurrentWord] = useState(null);
   const [error, setError] = useState(null);
+  const [query, setQuery] = useState(""); // ← moved here from SearchBar
 
   async function fetchWord(word) {
+    setQuery(word); // ← update input value automatically
     setStatus("loading");
     setCurrentWord(null);
     setError(null);
@@ -19,6 +21,7 @@ export function SearchProvider({ children }) {
 
       if (!response.ok) {
         const errorData = await response.json();
+        console.log("This is the error:", errorData);
         setStatus("error");
         setError({
           title: errorData.title || "No Definitions Found",
@@ -27,12 +30,11 @@ export function SearchProvider({ children }) {
             errorData.resolution || "Please try searching for another word.",
           searchedWord: word,
         });
+        // console.log(error);
         return;
       }
       const data = await response.json();
-      console.log(data[0]);
       setCurrentWord(data[0]);
-
       setStatus("success");
     } catch (err) {
       setStatus("error");
@@ -52,6 +54,8 @@ export function SearchProvider({ children }) {
         currentWord,
         error,
         fetchWord,
+        query,
+        setQuery,
       }}
     >
       {children}

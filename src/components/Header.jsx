@@ -2,13 +2,12 @@ import logo from "../assets/images/logo.svg?url";
 import arrow from "../assets/images/icon-arrow-down.svg?url";
 import { useState, useContext } from "react";
 import { FontContext } from "../context/FontContext";
-import { ThemeContext, ThemeProvider } from "../context/ThemeContext";
+import { ThemeContext } from "../context/ThemeContext";
 
 export default function Header() {
   return (
     <header className="header">
       <img src={logo} alt="Dictionary" className="header__logo" />
-
       <RightContainer />
     </header>
   );
@@ -18,14 +17,14 @@ function RightContainer() {
   return (
     <div className="header__rightContainer">
       <FontSelector />
-
       <ThemeSelector />
     </div>
   );
 }
+
 function FontSelector() {
   const [fontSelectorIsOpen, setFontSelectorIsOpen] = useState(false);
-  const { setFont } = useContext(FontContext);
+  const { font, setFont } = useContext(FontContext);
 
   const fontOptions = [
     { value: "sans", label: "Sans Serif" },
@@ -33,17 +32,22 @@ function FontSelector() {
     { value: "mono", label: "Mono" },
   ];
 
+  const fontLabels = {
+    sans: "Sans Serif",
+    serif: "Serif",
+    mono: "Mono",
+  };
+
   return (
-    <div className="header__fontSelector" data-open="false">
+    <div className="header__fontSelector">
       <button
         className="header__fontTrigger text-mono-bold-small"
-        id="fontTrigger"
         type="button"
         aria-haspopup="listbox"
-        aria-expanded="false"
+        aria-expanded={fontSelectorIsOpen}
         onClick={() => setFontSelectorIsOpen((f) => !f)}
       >
-        <span id="fontLabel">Sans Serif</span>
+        <span>{fontLabels[font]}</span>
         <img
           src={arrow}
           alt=""
@@ -52,12 +56,16 @@ function FontSelector() {
       </button>
 
       {fontSelectorIsOpen && (
-        <ul className="header__fontMenu" id="fontMenu" role="listbox">
+        <ul className="header__fontMenu" role="listbox">
           {fontOptions.map((option) => (
             <li
-              className="header__fontOption"
-              onClick={() => setFont(option.value)}
               key={option.value}
+              className="header__fontOption"
+              role="option"
+              onClick={() => {
+                setFont(option.value);
+                setFontSelectorIsOpen(false);
+              }}
             >
               {option.label}
             </li>
